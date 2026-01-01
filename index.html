@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MiloExposed.site | The Location Myth</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         [x-cloak] { display: none !important; }
@@ -394,7 +394,19 @@
     </footer>
 
     <script>
-        lucide.createIcons();
+        // Use DOMContentLoaded to ensure icons and Alpine load safely even on rapid refreshes
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+        
+        // Safety fallback for Alpine x-cloak if script takes too long
+        window.addEventListener('load', () => {
+             document.querySelectorAll('[x-cloak]').forEach(el => {
+                if (!el.__x) el.style.display = 'none';
+             });
+        });
     </script>
 </body>
 </html>
