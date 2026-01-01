@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Milo Exposed + Milo Files</title>
+    <title>MiloExposed.site | The Location Myth</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        [x-cloak] { display: none !important; }
+
         @keyframes float {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
@@ -44,8 +46,6 @@
             box-shadow: inset 0 0 200px rgba(0,0,0,0.9);
         }
 
-        [x-cloak] { display: none !important; }
-
         .gradient-text {
             background: linear-gradient(to right, #ef4444, #fb923c, #dc2626);
             -webkit-background-clip: text;
@@ -81,6 +81,25 @@
         }
         .burn-active .fire-overlay { opacity: 1; }
 
+        .reveal-anim {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-anim.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes soft-bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
+        }
+        .animate-soft-bounce {
+            animation: soft-bounce 2.5s infinite;
+        }
+
         /* Mobile specific adjustments */
         @media (max-width: 640px) {
             .redacted-box { height: 0.9em; }
@@ -107,10 +126,18 @@
             }, 1200);
         }
       }" 
-      @scroll.window="scrolled = (window.pageYOffset > 20)">
+      @scroll.window="scrolled = (window.pageYOffset > 20)"
+      x-init="
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal-anim').forEach(el => observer.observe(el));
+      ">
 
     <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-50 transition-all duration-300 px-4 md:px-6" 
+    <nav class="fixed top-0 w-full z-50 transition-all duration-500 px-4 md:px-6" 
          :class="scrolled ? 'bg-slate-950/90 backdrop-blur-md py-3 border-b border-slate-800' : 'bg-transparent py-5'">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-2">
@@ -122,6 +149,7 @@
             
             <div class="hidden md:flex items-center gap-6 text-sm font-bold text-slate-400">
                 <a href="#home" class="hover:text-white transition-colors">The Truth</a>
+                <a href="#time" class="hover:text-white transition-colors">17:00 Debunk</a>
                 <a href="#location" class="hover:text-white transition-colors">Evidence</a>
             </div>
 
@@ -132,8 +160,9 @@
         </div>
 
         <!-- Mobile Menu -->
-        <div x-show="isMenuOpen" x-transition x-cloak class="md:hidden absolute top-full left-0 w-full bg-slate-900 border-b border-slate-800 p-6 flex flex-col gap-4">
+        <div x-show="isMenuOpen" x-transition x-cloak class="md:hidden absolute top-full left-0 w-full bg-slate-900 border-b border-slate-800 p-6 flex flex-col gap-4 shadow-2xl">
             <a href="#home" @click="isMenuOpen = false" class="text-lg font-bold">The Truth</a>
+            <a href="#time" @click="isMenuOpen = false" class="text-lg font-bold">17:00 Delusion</a>
             <a href="#location" @click="isMenuOpen = false" class="text-lg font-bold">The Location Myth</a>
             <button @click="showMiloFiles = true; isMenuOpen = false" class="bg-red-700 py-3 rounded-lg font-black uppercase">Access Files</button>
         </div>
@@ -144,7 +173,7 @@
         <div class="absolute top-1/4 -left-10 w-64 h-64 bg-red-600/10 rounded-full blur-[80px]"></div>
         <div class="absolute bottom-1/4 -right-10 w-64 h-64 bg-blue-600/10 rounded-full blur-[80px]"></div>
         
-        <div class="relative z-10 max-w-4xl mx-auto text-center">
+        <div class="relative z-10 max-w-4xl mx-auto text-center reveal-anim">
             <div class="inline-flex items-center gap-2 bg-slate-900/80 border border-slate-800 px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold text-red-400 mb-6 uppercase tracking-widest">
                 <i data-lucide="alert-circle" class="w-3 h-3"></i> Intelligence Failure Detected
             </div>
@@ -156,39 +185,96 @@
 
             <p class="text-base md:text-xl text-slate-400 mb-10 max-w-xl mx-auto">
                 He thinks a VPN moves his physical body. <br class="hidden md:block">
-                We have the redacted receipts to prove he's wrong.
+                And he thinks "17 PM" is a valid time in Finland.
             </p>
 
             <div class="flex flex-col gap-4 items-center">
                 <button 
-                   class="w-full sm:w-auto px-10 py-5 bg-red-700 text-white rounded-xl font-black uppercase tracking-widest shadow-lg shadow-red-900/40 hover:bg-red-600 transition-all active:scale-95 flex items-center justify-center gap-3"
+                   class="w-full sm:w-auto px-10 py-5 bg-red-700 text-white rounded-xl font-black uppercase tracking-widest shadow-lg shadow-red-900/40 hover:bg-red-600 hover:scale-105 transition-all active:scale-95 flex items-center justify-center gap-3 group"
                    @touchstart="isShaking = true" 
                    @touchend="isShaking = false"
                    @mousedown="isShaking = true"
                    @mouseup="isShaking = false"
                    @click="showMiloFiles = true">
-                   ACCESS MILO FILES <i data-lucide="file-warning" class="w-5 h-5"></i>
+                    ACCESS MILO FILES <i data-lucide="file-warning" class="w-5 h-5 group-hover:rotate-12 transition-transform"></i>
                 </button>
-                <button @click="showGoogleModal = true" class="text-slate-500 font-bold hover:text-white transition-colors text-sm underline underline-offset-4">
-                    Wait, how does it actually work?
+                <button @click="showGoogleModal = true" class="text-slate-500 font-bold hover:text-white transition-colors text-sm underline underline-offset-4 mb-12">
+                    Wait, how does time actually work?
                 </button>
+            </div>
+
+            <!-- Scroll Indicator -->
+            <div class="md:hidden mt-8 animate-soft-bounce opacity-60">
+                <p class="text-[10px] font-black uppercase tracking-[0.3em] mb-2">Scroll for Evidence</p>
+                <i data-lucide="chevron-down" class="mx-auto w-5 h-5"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- Time Logic Section -->
+    <section id="time" class="py-24 bg-red-950/10 border-y border-slate-900 px-6 relative overflow-hidden">
+        <div class="max-w-5xl mx-auto relative z-10">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="reveal-anim">
+                    <h2 class="text-3xl md:text-5xl font-black uppercase mb-6 italic tracking-tighter">
+                        The <span class="text-red-600">"17 PM"</span> BUSTED
+                    </h2>
+                    <p class="text-slate-400 text-lg mb-8 leading-relaxed">
+                        Milo claims that in Finland, they use "17 PM". 
+                        We checked with reality. Reality filed a complaint.
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-4 p-4 bg-slate-900 rounded-xl border border-slate-800 hover:border-red-500/50 transition-colors">
+                            <div class="bg-red-600/20 p-2 rounded-lg text-red-500">
+                                <i data-lucide="clock" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-black uppercase text-sm mb-1">Milo's Invention</h4>
+                                <p class="text-slate-300">"It's 17 PM right now in Turku!"</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4 p-4 bg-slate-900 rounded-xl border border-slate-800 hover:border-blue-500/50 transition-colors">
+                            <div class="bg-blue-600/20 p-2 rounded-lg text-blue-500">
+                                <i data-lucide="check-circle" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-black uppercase text-sm mb-1">Actual Finland</h4>
+                                <p class="text-slate-300 italic">"It is 17:00. We use military time. PM does not exist after 12."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal-anim delay-200">
+                    <div class="relative group">
+                        <div class="absolute -inset-1 bg-gradient-to-r from-red-600 to-orange-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+                        <div class="relative bg-slate-900 border border-slate-800 p-8 rounded-2xl text-center">
+                            <div class="text-6xl md:text-8xl font-black text-red-600 mb-4 animate-pulse">17:00</div>
+                            <div class="text-slate-500 font-mono text-xs uppercase tracking-[0.3em]">Status: Not PM</div>
+                            <div class="mt-8 pt-8 border-t border-slate-800 text-left space-y-2">
+                                <div class="h-2 w-full bg-slate-800 rounded"></div>
+                                <div class="h-2 w-3/4 bg-slate-800 rounded"></div>
+                                <div class="h-2 w-1/2 bg-red-900/50 rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Comparison -->
-    <section id="location" class="py-20 bg-slate-900/50 px-6">
+    <section id="location" class="py-20 bg-slate-950 px-6">
         <div class="max-w-5xl mx-auto">
-            <h2 class="text-2xl md:text-4xl font-black uppercase mb-12 italic text-center md:text-left">The VPN Location Myth</h2>
+            <h2 class="text-2xl md:text-4xl font-black uppercase mb-12 italic text-center md:text-left reveal-anim">The VPN Location Myth</h2>
             <div class="grid md:grid-cols-2 gap-6">
-                <div class="p-6 bg-red-950/30 border border-red-900/30 rounded-2xl relative overflow-hidden group">
+                <div class="reveal-anim p-6 bg-red-950/30 border border-red-900/30 rounded-2xl relative overflow-hidden group hover:bg-red-950/40 transition-all duration-300 hover:scale-[1.02]">
                     <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                         <i data-lucide="ghost" class="w-20 h-20 text-red-500"></i>
                     </div>
                     <h3 class="text-red-500 font-black mb-3 text-xs tracking-tighter uppercase">Milo's Delusion</h3>
                     <p class="text-slate-200 text-lg leading-snug italic">"If my IP says Tokyo, Google thinks my couch is in Shinjuku."</p>
                 </div>
-                <div class="p-6 bg-zinc-800/30 border border-zinc-700/30 rounded-2xl">
+                <div class="reveal-anim p-6 bg-zinc-800/30 border border-zinc-700/30 rounded-2xl hover:bg-zinc-800/40 transition-all duration-300 hover:scale-[1.02]">
                     <h3 class="text-blue-400 font-black mb-3 text-xs tracking-tighter uppercase">Physical Reality</h3>
                     <p class="text-slate-300 text-lg leading-snug">GPS Satellites, Wi-Fi MAC addresses, and cell towers don't care about your encrypted tunnel.</p>
                 </div>
@@ -209,7 +295,6 @@
             
             <div class="fire-overlay"></div>
 
-            <!-- Header Info -->
             <div class="flex justify-between items-start mb-6 border-b-4 border-black pb-4">
                 <div>
                     <h2 class="text-2xl md:text-5xl font-black uppercase leading-none italic">MILO-FILES</h2>
@@ -224,26 +309,15 @@
                 </div>
             </div>
 
-            <!-- Page 1: The "But I used a" collection -->
             <div x-show="currentPage === 1" class="space-y-4">
                 <p class="font-black bg-black text-white px-2 py-0.5 inline-block text-xs">EXHIBIT A: THE EXCUSES</p>
                 <div class="space-y-3 md:space-y-5 bg-zinc-300/50 p-4 border-2 border-dashed border-black">
                     <p class="text-sm md:text-lg font-bold">"But I used a <span class="redacted-box w-20 md:w-32"></span>!"</p>
                     <p class="text-sm md:text-lg font-bold">"But I used a <span class="redacted-box w-full"></span>!"</p>
                     <p class="text-sm md:text-lg font-bold">"But I used a <span class="redacted-box w-24"></span> with <span class="redacted-box w-16"></span> <span class="redacted-box w-20"></span>!"</p>
-                    <p class="text-sm md:text-lg font-bold">"But I used a <span class="redacted-box w-48"></span> to hide the <span class="redacted-box w-32"></span>!"</p>
-                    <div class="h-px bg-black/20 w-full my-2"></div>
-                    <p class="text-[10px] md:text-xs italic text-zinc-600">The subject continues to believe can move.</p>
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <span class="redacted-box h-4 w-full"></span>
-                    <span class="redacted-box h-4 w-full"></span>
-                    <span class="redacted-box h-4 w-full"></span>
-                    <span class="redacted-box h-4 w-full"></span>
                 </div>
             </div>
 
-            <!-- Page 2: Extreme Redaction 1 -->
             <div x-show="currentPage === 2" class="space-y-2">
                 <p class="font-black bg-black text-white px-2 py-0.5 inline-block text-xs uppercase">Telemetry Logs</p>
                 <template x-for="i in 12">
@@ -252,25 +326,21 @@
                         <span class="redacted-box flex-1 h-4"></span>
                     </div>
                 </template>
-                <p class="text-center font-black text-red-700 py-4 uppercase"><span class="redacted-box flex-1 h-4"></span></p>
             </div>
 
-            <!-- Page 3: Visual Proof (Placeholders) -->
             <div x-show="currentPage === 3" class="space-y-4">
                 <p class="font-black bg-black text-white px-2 py-0.5 inline-block text-xs uppercase">Evidence Imagery</p>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="aspect-video bg-zinc-800 flex items-center justify-center p-4">
-                        <span class="text-[8px] text-white font-black text-center uppercase">Imageproof.png <br> <br> </span>
+                        <span class="text-[8px] text-white font-black text-center uppercase">Imageproof.png</span>
                     </div>
                     <div class="aspect-video bg-zinc-400 flex items-center justify-center relative overflow-hidden">
                         <div class="absolute inset-0 bg-black rotate-12 translate-x-4"></div>
                         <span class="text-[8px] text-black font-black text-center uppercase z-10">VPN TUNNEL <br> [VOIDED]</span>
                     </div>
                 </div>
-                <span class="redacted-box w-full h-20"></span>
             </div>
 
-            <!-- Page 4: THE VOID -->
             <div x-show="currentPage === 4" class="space-y-1">
                 <p class="font-black bg-red-700 text-white px-2 py-0.5 inline-block text-xs uppercase mb-2">Total Logic Failure</p>
                 <template x-for="i in 20">
@@ -278,28 +348,23 @@
                 </template>
             </div>
 
-            <!-- Page 5: Verdict -->
             <div x-show="currentPage === 5" class="space-y-6 text-center py-4">
                 <div class="border-8 border-red-700 p-6 inline-block rotate-3">
                     <h3 class="text-4xl md:text-6xl font-black text-red-700 uppercase leading-none">FAILED</h3>
                     <p class="text-xs font-black uppercase mt-2">Subject logic: Non-existent</p>
                 </div>
-                <p class="text-sm md:text-base font-bold italic px-4">
-                    "Milo <span class="redacted-box w-12"></span> is <span class="redacted-box w-20"></span> confirmed to be <span class="redacted-box w-16"></span> completely <span class="redacted-box w-24"></span> wrong."
-                </p>
             </div>
 
-            <!-- Modal Nav -->
             <div class="mt-8 pt-6 border-t-4 border-black flex flex-wrap justify-between items-center gap-4">
                 <div class="flex gap-2 w-full md:w-auto justify-center order-2 md:order-1">
                     <button @click="currentPage = Math.max(1, currentPage - 1)" 
                             :disabled="currentPage === 1 || isBurning"
-                            class="px-4 py-2 bg-zinc-400 font-black text-[10px] uppercase hover:bg-black hover:text-white disabled:opacity-20">
+                            class="px-4 py-2 bg-zinc-400 font-black text-[10px] uppercase hover:bg-black hover:text-white disabled:opacity-20 transition-colors">
                         [Back]
                     </button>
                     <button @click="currentPage = Math.min(5, currentPage + 1)" 
                             :disabled="currentPage === 5 || isBurning"
-                            class="px-4 py-2 bg-zinc-400 font-black text-[10px] uppercase hover:bg-black hover:text-white disabled:opacity-20">
+                            class="px-4 py-2 bg-zinc-400 font-black text-[10px] uppercase hover:bg-black hover:text-white disabled:opacity-20 transition-colors">
                         [Next]
                     </button>
                 </div>
@@ -318,24 +383,18 @@
             <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
                 <i data-lucide="search" class="text-white w-8 h-8"></i>
             </div>
-            <h3 class="text-xl font-black mb-2 uppercase">Google it yourself</h3>
-            <p class="text-slate-400 text-sm mb-6 leading-relaxed">Seriously, Milo. VPNs mask your IP. GPS masks your reality. They are not the same thing.</p>
+            <h3 class="text-xl font-black mb-2 uppercase">Time & Space 101</h3>
+            <p class="text-slate-400 text-sm mb-6 leading-relaxed">1. Finland uses 24-hour clocks. 17:00 is just 5:00 PM. <br> 2. IP addresses don't teleport meat. </p>
             <button @click="showGoogleModal = false" class="w-full py-4 bg-slate-800 text-white font-bold rounded-xl active:scale-95 transition-transform">Acknowledged</button>
         </div>
     </div>
 
     <footer class="py-12 border-t border-slate-900 px-6 text-center text-slate-600 text-[10px] md:text-xs font-bold uppercase tracking-widest">
-        &copy; 2026 MiloExposed.site // No cookies, just cold hard facts.
+        &copy; 2026 MiloExposed.site // Logic is not a luxury, it's a requirement.
     </footer>
 
     <script>
         lucide.createIcons();
-        // Prevent bounce scrolling on mobile for a cleaner feel
-        document.body.addEventListener('touchmove', function(e) {
-            if (document.querySelector('.showMiloFiles')) {
-                // Allow scrolling only inside modal
-            }
-        }, { passive: false });
     </script>
 </body>
 </html>
